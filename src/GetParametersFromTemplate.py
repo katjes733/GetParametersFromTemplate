@@ -31,9 +31,19 @@ def validate_json_string(arg_value):
         raise argparse.ArgumentTypeError(f"{arg_value} is no valid JSON string.")
     return arg_value 
 
+def yml_filename_regex(arg_value, pat=re.compile(r"(?i)^([\w\- ]*/)*[\w-]*\.yml$")):
+    if not pat.match(arg_value):
+        raise argparse.ArgumentTypeError("Not a valid YML file name.")
+    return arg_value
+
+def json_filename_regex(arg_value, pat=re.compile(r"(?i)^([\w\- ]*/)*[\w-]*\.json$")):
+    if not pat.match(arg_value):
+        raise argparse.ArgumentTypeError("Not a valid JSON file name.")
+    return arg_value
+
 parser = argparse.ArgumentParser()
-parser.add_argument('template', help='The file name of the CloudFormation template')
-parser.add_argument('configFile', help='The (output) file name of the generated JSON configuration')
+parser.add_argument('template', type=yml_filename_regex, help='The file name of the CloudFormation template. Must be valid .yml file.')
+parser.add_argument('configFile', type=json_filename_regex, help='The (output) file name of the generated JSON configuration. Must be valid .json file.')
 parser.add_argument('--overrideParams', type=validate_json_string, help='The key/pair values to override as JSON')
 args = parser.parse_args()
 
